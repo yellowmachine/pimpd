@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+  mpd:
+    build:
+      context: .
+      dockerfile: Dockerfile.mpd
+    depends_on:
+      - snapserver
+    volumes:
+      - ./music:/var/lib/mpd/music
+      - ./mpd-db:/var/lib/mpd
+      - shared-fifo:/shared
+
+    restart: unless-stopped
+    # Si quieres acceso a audio en tu laptop, puedes añadir:
+    #devices:
+    #  - /dev/snd:/dev/snd
+
+  snapserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.snapserver
+    volumes:
+      - ./snapserver.conf:/etc/snapserver.conf
+      - shared-fifo:/shared
+
+    restart: unless-stopped
+    ports:
+      - "1704:1704"   # Puerto TCP para Snapclient
+      - "1705:1705"   # Puerto HTTP para la interfaz web de Snapserver (opcional)
+      - "1780:1780"   # Puerto TCP para control remoto (opcional)
+
+  snapclient:
+    build:
+      context: .
+      dockerfile: Dockerfile.snapclient
+    command: snapclient -h snapserver
+    depends_on:
+      - snapserver
+    restart: unless-stopped
+    devices:
+      - /dev/snd:/dev/snd
+
+volumes:
+  shared-fifo:
