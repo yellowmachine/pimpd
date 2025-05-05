@@ -5,9 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.snapclient
-    command: snapclient -h snapserver
-    depends_on:
-      - snapserver
+    command: snapclient -h 192.168.1.57
     restart: unless-stopped
     devices:
       - /dev/snd:/dev/snd
