@@ -13,9 +13,8 @@ services:
       - shared-fifo:/shared
 
     restart: unless-stopped
-    # Si quieres acceso a audio en tu laptop, puedes añadir:
-    #devices:
-    #  - /dev/snd:/dev/snd
+    ports:
+      - "6600:6600"
 
   snapserver:
     build:
