@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  snapclient:
+    build:
+      context: .
+      dockerfile: Dockerfile.snapclient
+    command: snapclient -h snapserver
+    depends_on:
+      - snapserver
+    restart: unless-stopped
+    devices:
+      - /dev/snd:/dev/snd
