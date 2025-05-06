@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.snapclient
-    command: snapclient -h 192.168.1.57
+    command: snapclient -h 192.168.1.57 --latency=${LATENCY}
     restart: unless-stopped
     devices:
       - /dev/snd:/dev/snd

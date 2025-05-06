@@ -1,2 +1,6 @@
-*.flac
+music/
 mpd-db/
+config
+filebrowser
+frontend/
+.env

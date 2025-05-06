@@ -9,6 +9,7 @@ services:
       - snapserver
     volumes:
       - ./music:/var/lib/mpd/music
+      - ./playlists:/var/lib/mpd/playlists
       - ./mpd-db:/var/lib/mpd
       - shared-fifo:/shared
 
@@ -34,12 +35,38 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.snapclient
-    command: snapclient -h snapserver
+    command: snapclient -h snapserver --latency=${LATENCY}
     depends_on:
       - snapserver
     restart: unless-stopped
     devices:
       - /dev/snd:/dev/snd
+
+  #filebrowser:
+  #  image: hurlenko/filebrowser
+  #  user: "1000:1001"
+  #  ports:
+  #    - 8080:8080
+  #  volumes:
+  #    - ./music:/data
+  #    - ./config:/config
+  #  environment:
+  #    - FB_BASEURL=/filebrowser
+  #  restart: always
+  samba:
+    image: dperson/samba:latest
+    container_name: samba
+    environment:
+      - TZ=Europe/Madrid
+    ports:
+      - "137:137/udp"
+      - "138:138/udp"
+      - "139:139/tcp"
+      - "445:445/tcp"
+    volumes:
+      - ./music:/music
+      - ./smb.conf:/etc/samba/smb.conf
+    restart: unless-stopped
 
 volumes:
   shared-fifo:
