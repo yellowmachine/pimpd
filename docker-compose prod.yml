@@ -41,6 +41,33 @@ services:
     restart: unless-stopped
     devices:
       - /dev/snd:/dev/snd
+  dnsmasq:
+    image: jpillora/dnsmasq
+    container_name: dnsmasq
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf:ro
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+  app:
+    build:
+      context: frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
   samba:
     image: dperson/samba:latest
     container_name: samba
@@ -58,3 +85,5 @@ services:
 
 volumes:
   shared-fifo:
+  caddy_data:
+  caddy_config:

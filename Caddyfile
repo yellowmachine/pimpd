@@ -1,0 +1,7 @@
+musicdev.casa {
+    reverse_proxy dev.casa:5173
+}
+
+music.casa {
+    reverse_proxy raspberry.casa:3000
+}
