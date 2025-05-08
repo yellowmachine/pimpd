@@ -1,0 +1,38 @@
+ARG NODE_VERSION=18.18.2
+
+FROM node:${NODE_VERSION}-alpine AS base
+
+WORKDIR /usr/src/app
+
+# Instala git y habilita corepack para pnpm
+RUN apk add --no-cache git && corepack enable
+
+# Clona el repositorio (ajusta la URL si es necesario)
+RUN git clone https://github.com/yellowmachine/qwikmpd .
+
+# Instala dependencias
+RUN pnpm install --frozen-lockfile
+
+# Construye la aplicación
+RUN pnpm run build
+
+# Etapa final para producción
+FROM node:${NODE_VERSION}-alpine AS final
+
+WORKDIR /app
+
+# Habilita corepack para pnpm en la imagen final
+RUN corepack enable
+
+# Copia los artefactos construidos desde la etapa anterior
+COPY --from=base /usr/src/app/package.json ./
+COPY --from=base /usr/src/app/node_modules ./node_modules
+COPY --from=base /usr/src/app/dist ./dist
+COPY --from=base /usr/src/app/server ./server
+
+# Usa usuario no root para mayor seguridad
+USER node
+
+EXPOSE 3000
+
+CMD ["pnpm", "serve"]

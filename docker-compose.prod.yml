@@ -64,7 +64,8 @@ services:
     restart: unless-stopped
   app:
     build:
-      context: frontend
+      context: .
+      dockerfile: Dockerfile.prod
     restart: unless-stopped
     ports:
       - "3000:3000"
