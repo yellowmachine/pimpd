@@ -5,3 +5,7 @@ http://music.casa {
 http://registry.casa {
     reverse_proxy dev.casa:4873
 }
+
+http://restore.casa {
+    reverse_proxy raspberry.casa:3001
+}
