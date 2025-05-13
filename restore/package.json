@@ -1,0 +1,12 @@
+{
+  "name": "restore-microservice",
+  "version": "1.0.0",
+  "description": "Microservicio para restaurar la app vía SSH",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "fastify": "^4.0.0"
+  }
+}

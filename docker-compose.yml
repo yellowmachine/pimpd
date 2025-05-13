@@ -17,6 +17,16 @@ services:
     ports:
       - "6600:6600"
 
+  restore:
+    build:
+      context: .
+      dockerfile: Dockerfile.restore
+    volumes:
+      - ${SSH_PATH}:/root/.ssh:ro
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+
   snapserver:
     build:
       context: .
@@ -41,15 +51,24 @@ services:
     restart: unless-stopped
     devices:
       - /dev/snd:/dev/snd
+
   dnsmasq:
-    image: jpillora/dnsmasq
+    image: sirscythe/dnsmasq-arm
     container_name: dnsmasq
+    cap_add:
+      - NET_ADMIN
     ports:
       - "53:53/udp"
-      - "53:53/tcp"
+      - "5380:8080"
     volumes:
-      - ./dnsmasq.conf:/etc/dnsmasq.conf:ro
-    restart: unless-stopped
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+    environment:
+      - HTTP_USER=miguel
+      - HTTP_PASS=123
+    restart: always
+    logging:
+      options:
+        max-size: "100m"
 
   caddy:
     image: caddy:2
@@ -62,13 +81,22 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped
+
   app:
     build:
       context: .
       dockerfile: Dockerfile.prod
+    image: app:latest
+    environment:
+      - SSH_HOST=${SSH_HOST}
+      - SSH_USER=${SSH_USER}
+      - SCRIPT_UPDATE_APP_PATH=${SCRIPT_UPDATE_APP_PATH}
+    volumes:
+      - /home/miguel/.ssh:/home/node/.ssh:ro
     restart: unless-stopped
     ports:
       - "3000:3000"
+
   samba:
     image: dperson/samba:latest
     container_name: samba
@@ -83,7 +111,7 @@ services:
       - ./music:/music
       - ./smb.conf:/etc/samba/smb.conf
     restart: unless-stopped
-    
+
 volumes:
   shared-fifo:
   caddy_data:

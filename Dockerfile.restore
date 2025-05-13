@@ -1,0 +1,16 @@
+FROM node:20-alpine
+
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# Copia solo la carpeta restore al contenedor
+COPY restore/ ./
+
+# Instala las dependencias
+RUN npm install
+
+# Expone el puerto (ajusta si usas otro)
+EXPOSE 3000
+
+# Comando para arrancar el microservicio
+CMD ["node", "index.js"]

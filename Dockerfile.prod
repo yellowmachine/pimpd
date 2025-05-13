@@ -21,6 +21,8 @@ FROM node:${NODE_VERSION}-alpine AS final
 
 WORKDIR /app
 
+RUN apk add --no-cache openssh
+
 # Habilita corepack para pnpm en la imagen final
 RUN corepack enable
 
