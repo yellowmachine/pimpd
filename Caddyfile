@@ -1,4 +1,9 @@
-http://music.casa {
+music.casa {
+    tls /certs/music.casa.pem /certs/music.casa-key.pem
+    reverse_proxy raspberry.casa:3000
+}
+
+http://music2.casa {
     reverse_proxy raspberry.casa:3000
 }
 

@@ -5,3 +5,4 @@ filebrowser
 frontend/
 .env
 *.log
+*.pem

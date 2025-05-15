@@ -80,6 +80,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+      - ./certs:/certs
     restart: unless-stopped
 
   app:
@@ -91,6 +92,7 @@ services:
       - SSH_HOST=${SSH_HOST}
       - SSH_USER=${SSH_USER}
       - SCRIPT_UPDATE_APP_PATH=${SCRIPT_UPDATE_APP_PATH}
+      - API_KEY_LASTFM=${API_KEY_LASTFM}
     volumes:
       - /home/miguel/.ssh:/home/node/.ssh:ro
     restart: unless-stopped
