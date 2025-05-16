@@ -33,6 +33,7 @@ This setup allows you to synchronize audio playback across multiple rooms using 
  
 This is a sample:
 
+```
 SNAPCLIENT_OPTS=-h snapserver --hostID namethisclient --latency=100
 MPD_SERVER = mpd
 SSH_HOST=192.168.1.56
@@ -42,6 +43,7 @@ AUTH_TOKEN=secret
 RESTORE_SCRIPT=/home/miguel/platform/pimpd/restore.sh
 SSH_PATH=/home/miguel/.ssh
 API_KEY_LASTFM=yourapikey
+```
 
 3. **Start the stack:**
 
@@ -49,6 +51,7 @@ API_KEY_LASTFM=yourapikey
 
 on port 3000 is running the webapp. You cand edit Caddifile. This is an example:
 
+```
 music.casa {
   tls /certs/music.casa.pem /certs/music.casa-key.pem
   reverse_proxy raspberry.casa:3000
@@ -61,3 +64,4 @@ http://music2.casa {
 http://restore.casa {
   reverse_proxy raspberry.casa:3001
 }
+```
