@@ -95,6 +95,7 @@ services:
       - API_KEY_LASTFM=${API_KEY_LASTFM}
     volumes:
       - /home/miguel/.ssh:/home/node/.ssh:ro
+      - ./music:/app/music
     restart: unless-stopped
     ports:
       - "3000:3000"
