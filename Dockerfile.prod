@@ -25,7 +25,7 @@ RUN apk add --no-cache python3 py3-pip ffmpeg
 RUN pip3 install --no-cache-dir yt-dlp
 
 RUN apk add --no-cache openssh
-
+RUN apk add kid3
 # Habilita corepack para pnpm en la imagen final
 RUN corepack enable
 
