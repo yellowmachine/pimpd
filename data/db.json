@@ -1,0 +1,28 @@
+{
+  "server": {
+    "ip": "127.0.0.1"
+  },
+  "clients": [],
+  "latency": 100,
+  "setupDone": true,
+  "volume": 50,
+  "youtube": {
+    "favorites": [
+      {
+        "channelId": "UCDptIDyUZvphf_9FLfrDjBw",
+        "channelTitle": "Semons Channel",
+        "thumbnail": "https://i.ytimg.com/vi/MsuBD7REDko/default.jpg"
+      },
+      {
+        "channelId": "UCF3Ez6QwZwwr_E7RZGJMW0A",
+        "channelTitle": "saselandia",
+        "thumbnail": "https://i.ytimg.com/vi/VAeXGm-BICg/default.jpg"
+      },
+      {
+        "channelId": "UCTTpOQ9wsJl5FX-1xczSR-A",
+        "channelTitle": "Saselandia Directos",
+        "thumbnail": "https://i.ytimg.com/vi/kAyUViwCAtY/default.jpg"
+      }
+    ]
+  }
+}

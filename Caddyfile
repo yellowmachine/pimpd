@@ -1,9 +1,36 @@
 music.casa {
     tls /certs/music.casa.pem /certs/music.casa-key.pem
-    reverse_proxy raspberry.casa:3000
+
+    reverse_proxy raspberry.casa:3000 {
+        transport http {
+            response_header_timeout 5m
+            dial_timeout 30s
+        }
+    }
+
+    request_body {
+        max_size 2GB
+    }
 }
 
-http://music2.casa {
+minio.casa {
+    reverse_proxy raspberry.casa:9000
+
+    header {
+        Access-Control-Allow-Origin  *
+        Access-Control-Allow-Methods "GET, POST, PUT, OPTIONS"
+        Access-Control-Allow-Headers *
+        Access-Control-Expose-Headers ETag
+        Access-Control-Allow-Credentials false
+    }
+}
+
+#music.casa {
+#    tls /certs/music.casa.pem /certs/music.casa-key.pem
+#    reverse_proxy raspberry.casa:3000
+#}
+
+http://musica.casa {
     reverse_proxy raspberry.casa:3000
 }
 

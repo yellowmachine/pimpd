@@ -1,5 +1,11 @@
 const fastify = require('fastify')({ logger: true });
 const { exec } = require('child_process');
+const multipart = require('@fastify/multipart');
+const fs = require('fs');
+const path = require('path');
+//const { pipeline } = require('stream/promises');
+const cors = require('@fastify/cors');
+
 
 // Configuración del SSH y seguridad
 const SSH_USER = process.env.SSH_USER || 'usuario';
@@ -69,8 +75,69 @@ fastify.post('/restore', async (request, reply) => {
   });
 });
 
+fastify.post('/upload', async function (request, reply) {
+
+  console.log('BODY:', request.body);
+if (request.body.file) {
+  console.log('filePart:', request.body.file);
+  console.log('filePart.file:', request.body.file.file);
+  console.log('Es stream:', request.body.file.file && typeof request.body.file.file.pipe === 'function');
+}
+
+
+  if (!request.body.base || !request.body.base.value) {
+    reply.code(400).send({ error: 'Missing base field' });
+    return;
+  }
+  const base = request.body.base.value;
+
+  const uploadDir = path.join('/app/music', base);
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+  const files = [];
+  if (request.body.file && request.body.file.file) {
+    files.push(request.body.file);
+  }
+  if (Array.isArray(request.body.files)) {
+    files.push(...request.body.files);
+  }
+
+  if (files.length === 0) {
+      reply.code(400).send({ error: 'No files uploaded' });
+      return;
+  }
+
+  for (const filePart of files) {
+  const dest = path.join(uploadDir, filePart.filename);
+  try {
+    const buffer = await filePart.toBuffer();
+    await fs.promises.writeFile(dest, buffer);
+    //await pipeline(filePart.file, fs.createWriteStream(dest));
+    const stats = fs.statSync(dest);
+    console.log('Tamaño subido:', stats.size);
+    if (stats.size === 0) {
+      fs.unlinkSync(dest);
+      console.error('Archivo vacío:', filePart.filename);
+    }
+  } catch (err) {
+    console.error('Error guardando archivo:', err);
+  }
+}
+
+
+  reply.send({ ok: true, files: files.map(f => f.filename) });
+});
+
+
 const start = async () => {
   try {
+    await fastify.register(cors, { origin: '*' });
+    await fastify.register(multipart, {
+      attachFieldsToBody: true,
+      limits: {
+        fileSize: 1000 * 1024 * 1024 // 50 MB
+      }
+   });
     await fastify.listen({ port: 3000, host: '0.0.0.0' });
   } catch (err) {
     fastify.log.error(err);

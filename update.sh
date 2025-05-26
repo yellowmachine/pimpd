@@ -13,6 +13,18 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LOGFILE="$SCRIPT_DIR/update_app.log"
+SHA_FILE="$SCRIPT_DIR/data/current_deployed_sha.txt"
+
+# Comprueba si el log existe y lo renombra/elimina antes de empezar a escribir en él
+if [ -f "$LOGFILE" ]; then
+    # Opción A: Renombrar para guardar una copia anterior (ej. update_app.log.old)
+    mv "$LOGFILE" "${LOGFILE}.old"
+    echo "Log anterior renombrado a ${LOGFILE}.old"
+
+    # Opción B: Eliminar el log anterior (si no necesitas historial)
+    # rm "$LOGFILE"
+    # echo "Log anterior eliminado."
+fi
 
 {
   echo "=============================="
@@ -25,6 +37,10 @@ LOGFILE="$SCRIPT_DIR/update_app.log"
   fi
 
   docker compose build --no-cache app
+  if [ $? -ne 0 ]; then
+    echo "Error: Falló la construcción de la imagen 'app'." >&2
+    exit 1
+  fi
 
   echo "Reiniciando el servicio 'app'..."
   nohup bash -c 'docker compose down app && sleep 2 && docker compose up -d app' >> "$LOGFILE" 2>&1 &
@@ -34,5 +50,21 @@ LOGFILE="$SCRIPT_DIR/update_app.log"
 
   echo "Actualización completada. Por favor, refresca la pantalla en unos segundos para ver los cambios."
   echo
+
+  REPO_URL="https://github.com/yellowmachine/qwikmpd" 
+  BRANCH_NAME="main"
+
+  # Ejecuta git ls-remote y filtra la salida para obtener solo el SHA de la rama deseada
+  LAST_COMMIT_SHA=$(git ls-remote "$REPO_URL" "$BRANCH_NAME" | grep "refs/heads/$BRANCH_NAME" | cut -f 1)
+
+  if [ -z "$LAST_COMMIT_SHA" ]; then
+    echo "Error: No se pudo obtener el SHA para la rama $BRANCH_NAME en $REPO_URL" >&2
+    exit 1
+  else
+    echo "$LAST_COMMIT_SHA" > "$SHA_FILE"
+    echo "SHA del commit '$LAST_COMMIT_SHA' guardado en '$SHA_FILE'."
+    exit 0
+  fi
+
 } 2>&1 | tee -a "$LOGFILE"
 

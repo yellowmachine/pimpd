@@ -1,6 +1,5 @@
-version: '3.7'
-
 services:
+
   mpd:
     build:
       context: .
@@ -23,6 +22,7 @@ services:
       dockerfile: Dockerfile.restore
     volumes:
       - ${SSH_PATH}:/root/.ssh:ro
+      - ./music:/app/music
     ports:
       - "3001:3000"
     restart: unless-stopped
@@ -89,11 +89,13 @@ services:
       dockerfile: Dockerfile.prod
     image: app:latest
     environment:
+      - ORIGIN=https://music.casa
       - SSH_HOST=${SSH_HOST}
       - SSH_USER=${SSH_USER}
       - SCRIPT_UPDATE_APP_PATH=${SCRIPT_UPDATE_APP_PATH}
       - API_KEY_LASTFM=${API_KEY_LASTFM}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - PUBLIC_FIX_UPLOAD_URL=${PUBLIC_FIX_UPLOAD_URL}
     volumes:
       - ${SSH_PATH}:/home/node/.ssh:ro
       - ./music:/app/music
