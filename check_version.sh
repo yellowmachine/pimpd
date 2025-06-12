@@ -7,7 +7,7 @@ GIT_BRANCH="main"
 WORK_DIR="/tmp/repo_check"
 LOG_FILE="/var/log/app_version_check.log" # Ruta para los logs dentro del contenedor
 APP_UPDATE_ENDPOINT="http://app:3000/api/version"
-
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # --- Funciones ---
 
 # Función para registrar mensajes
@@ -62,7 +62,7 @@ if [ "$LATEST_REMOTE_SHA" != "$CURRENT_DEPLOYED_SHA" ]; then
 
     # --- Acciones de Actualización ---
     log_message "Iniciando actualización de la aplicación $APP_SERVICE_NAME via HTTP POST a $APP_UPDATE_ENDPOINT..."
-    /home/miguel/platform/pimpd/update.sh
+    ${SCRIPT_DIR}/update.sh
 
 else
     log_message "No se realiza accion."
